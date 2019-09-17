@@ -1,7 +1,9 @@
 <template>
     <div>
         <Header title="我的"/>
-        <Login/>
+        <div id="content">
+            <router-view />
+        </div>
         <TabBar/>
     </div>
 </template>

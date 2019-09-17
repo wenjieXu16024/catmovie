@@ -1,26 +1,32 @@
 <template>
     <div class="city_body">
         <div class="city_list">
-            <div>
-                <div class="city_hot">
-                    <h2>热门城市</h2>
-                    <ul class="clearfix">
-                        <li v-for="item in hotList" :key="item.id">
-                            {{item.nm}}
-                        </li>
-                    </ul>
-                </div>
-                <div class="city_sort"  ref="city_sort">
-                    <div v-for="item in cityList" :key="item.index">
-                        <h2>{{ item.index }}</h2>
-                        <ul>
-                            <li v-for="itemList in item.list" :key="itemList.id">
-                                {{ itemList.nm }}
+            <Loading v-if="isLoading"></Loading>
+            <Scroller v-else ref="city_List">
+                <div>
+                    <div class="city_hot">
+                        <h2>热门城市</h2>
+                        <ul class="clearfix">
+                            <li v-for="item in hotList" :key="item.id"
+                                @tap="handleToCity(item.nm , item.id)">
+                                {{item.nm}}
                             </li>
                         </ul>
                     </div>
+                    <div class="city_sort"  ref="city_sort">
+                        <div v-for="item in cityList" :key="item.index">
+                            <h2>{{ item.index }}</h2>
+                            <ul>
+                                <li v-for="itemList in item.list" :key="itemList.id"
+                                    @tap="handleToCity(item.nm , item.id)">
+                                    {{ itemList.nm }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </Scroller>
+
         </div>
         <div class="city_index">
             <ul>
@@ -34,6 +40,7 @@
 </template>
 
 <script>
+    //import BScroll from "../Scroller/index";
     export default {
         name: 'City',
         data(){
@@ -77,9 +84,9 @@
                 }
                 for (var i = 0; i < cities.length; i++) {
                     var firstLetter = cities[i].py.substring(0, 1).toUpperCase();
-                    if (toCom(firstLetter) ){
+                    if (toCom(firstLetter) ){//新添加index
                         cityList.push({ index : firstLetter , list : [ { nm : cities[i].nm , id : cities[i].id } ] });
-                    }  else {
+                    }  else { //累加到已有index中
                             for(var j=0;j<cityList.length;j++){
                                 if(cityList[j].index === firstLetter){
                                     cityList[j].list.push( { nm : cities[i].nm , id : cities[i].id } );
@@ -112,9 +119,16 @@
                 };
             },
             handleToIndex(index){
-                var h2 = this.$refs.city_sort.getElementsByName('h2');
-                this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
-
+                var h2 = this.$refs.city_sort.getElementsByTagName('h2');
+                //this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+                //上面的不行了因为 实在BScroll组件中了不生效，要重新制定 ref
+                    this.$refs.city_List.toScrollTop(- h2[index].offsetTop)
+            },
+            handleToCity(nm,id){
+                    this.$store.commit('city/CITY_INFO',{ nm , id });
+                    window.localStorage.setItem('nowNm',nm);
+                window.localStorage.setItem('nowId',id);
+                this.$router.push('/movie/nowPlaying')
             }
         }
     }

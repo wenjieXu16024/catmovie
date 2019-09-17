@@ -1,7 +1,7 @@
 export default {
     path : '/mine',
     component : () => import('@/views/Mine'),
-    /*  children : [
+     children : [
             {
                 path : 'center',
                 component : () => import('@/views/Mine/center.vue')
@@ -22,5 +22,5 @@ export default {
                 path : '/mine',
                 redirect : 'center'
             }
-        ]*/
+        ]
 }
